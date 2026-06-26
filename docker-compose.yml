@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: notesapp-postgres
+    environment:
+      POSTGRES_DB: notes_app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notes_app"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: notesapp-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=notes_app;Username=postgres;Password=postgres
+      Jwt__Issuer: NotesApp.Api
+      Jwt__Audience: NotesApp.Client
+      Jwt__SecretKey: super-secret-dev-key-change-in-production
+      Jwt__ExpiresInMinutes: 60
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: notesapp-frontend
+    depends_on:
+      - backend
+    environment:
+      NUXT_API_BASE_SERVER: http://backend:8080
+      NUXT_PUBLIC_API_BASE: http://localhost:8080
+    ports:
+      - "3080:3000"
+
+volumes:
+  postgres_data:

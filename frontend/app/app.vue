@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 useHead({
   meta: [
     { name: 'viewport', content: 'width=device-width, initial-scale=1' }
@@ -11,67 +11,48 @@ useHead({
   }
 })
 
-const title = 'Nuxt Starter Template'
-const description = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
+const { isAuthenticated, logout } = useAuth()
+
+const title = 'Notes App'
+const description = 'Register, log in, and manage your personal notes.'
 
 useSeoMeta({
   title,
   description,
   ogTitle: title,
   ogDescription: description,
-  ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
   twitterCard: 'summary_large_image'
 })
+
+const handleLogout = async () => {
+  await logout()
+  await navigateTo('/sign-in')
+}
 </script>
 
 <template>
   <UApp>
-    <UHeader>
-      <template #left>
-        <NuxtLink to="/">
-          <AppLogo class="w-auto h-6 shrink-0" />
+    <header class="border-b border-default">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+        <NuxtLink to="/" class="text-lg font-semibold">
+          Notes App
         </NuxtLink>
 
-        <TemplateMenu />
-      </template>
-
-      <template #right>
-        <UColorModeButton />
-
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UHeader>
+        <div class="flex items-center gap-2">
+          <template v-if="!isAuthenticated">
+            <UButton to="/sign-in" color="neutral" variant="ghost" label="Sign in" />
+            <UButton to="/sign-up" label="Create account" />
+          </template>
+          <template v-else>
+            <UButton to="/notes" color="neutral" variant="ghost" label="My notes" />
+            <UButton color="error" variant="soft" label="Log out" @click="handleLogout" />
+          </template>
+        </div>
+      </div>
+    </header>
 
     <UMain>
       <NuxtPage />
     </UMain>
-
-    <USeparator icon="i-simple-icons-nuxtdotjs" />
-
-    <UFooter>
-      <template #left>
-        <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
-        </p>
-      </template>
-
-      <template #right>
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
-      </template>
-    </UFooter>
   </UApp>
 </template>

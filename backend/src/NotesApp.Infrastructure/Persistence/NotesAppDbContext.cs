@@ -71,6 +71,17 @@ public class NoteConfiguration : IEntityTypeConfiguration<Note>
             .HasColumnType("text")
             .IsRequired();
 
+        builder.Property(note => note.Status)
+            .HasColumnName("status")
+            .HasColumnType("text")
+            .HasDefaultValue("active")
+            .IsRequired();
+
+        builder.Property(note => note.DueDate)
+            .HasColumnName("due_date")
+            .HasColumnType("timestamp with time zone")
+            .IsRequired(false);
+
         builder.Property(note => note.UserId)
             .HasColumnType("uuid")
             .IsRequired();

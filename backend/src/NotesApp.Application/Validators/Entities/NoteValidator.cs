@@ -20,5 +20,9 @@ public sealed class NoteValidator : AbstractValidator<Note>
 
         RuleFor(note => note.UserId)
             .NotEmpty();
+
+        RuleFor(note => note.Status)
+            .NotEmpty()
+            .Must(status => !string.IsNullOrWhiteSpace(status));
     }
 }

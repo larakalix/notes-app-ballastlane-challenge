@@ -15,6 +15,13 @@ export default defineNuxtConfig({
     '/': { prerender: true }
   },
 
+  runtimeConfig: {
+    apiBaseServer: 'http://localhost:8080',
+    public: {
+      apiBase: 'http://localhost:8080'
+    }
+  },
+
   compatibilityDate: '2025-01-15',
 
   eslint: {

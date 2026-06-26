@@ -12,7 +12,7 @@ Create .NET C# API for Notes App that support:
 - CRUD operations for notes
 - PostgreSQL persistence.
 - Clean Architecture
-- Unit tests
+- Unit tests (xUnit, Moq, FluentAssertions)
 
 ## Backend Architecture
 
@@ -45,6 +45,7 @@ backend/
 Use PostgreSQL
 
 ### Users
+
 Required fields:
 
 - `Id` -> PK, uuid, required
@@ -54,6 +55,7 @@ Required fields:
 - `CreatedAt` -> timestamp, required, now() as default
 
 ### Notes
+
 Required fields:
 
 - `Id` -> PK, uuid, required
@@ -91,6 +93,7 @@ Repositories implementation will be in **Infrastructure** layer.
 ### TokenService
 
 - GenerateToken
+
 ---
 
 ### Authentication API
@@ -118,6 +121,73 @@ Repositories implementation will be in **Infrastructure** layer.
 | `GET`  | `/api/public/status` | Public        | Check if the API is running |
 
 ---
+
+### TDD
+
+The backend must include automated tests that validate the main behaviour of the API, so that should cover the following layers:
+
+- Application -> business logic
+- Data Access -> repositories
+- API endpoints
+- Auth behaviour
+
+So there are some use cases for testing purpose:
+
+UserService:
+
+- Register succeeds with valid data.
+- Register fails when name is empty.
+- Register fails when email is empty.
+- Register fails when password is empty.
+- Register fails when email already exists.
+- Register hashes the password before saving.
+- Login succeeds with valid credentials.
+- Login fails when user does not exist.
+- Login fails when password is invalid.
+- Get current user succeeds when user exists.
+- Get current user fails when user does not exist.
+
+NoteService:
+
+- Create note succeeds with valid data.
+- Create note fails when title is empty.
+- Create note fails when content is empty.
+- Get all notes returns only notes for the current user.
+- Get note by ID succeeds when the note belongs to the current user.
+- Get note by ID fails when the note belongs to another user.
+- Update note succeeds when the note belongs to the current user.
+- Update note fails when the note belongs to another user.
+- Delete note succeeds when the note belongs to the current user.
+- Delete note fails when the note belongs to another user.
+
+UserRepository:
+
+- Add user.
+- Get user by ID.
+- Get user by email.
+- Check email exists.
+- Return false when email does not exist.
+
+NoteRepository
+
+- Add note.
+- Get note by ID.
+- Get notes by user ID.
+- Update note.
+- Delete note.
+- Ensure notes are filtered by user ID.
+
+Public Endpoints
+
+- GET /api/public/status returns 200 OK.
+- POST /api/auth/register returns success for valid data.
+- POST /api/auth/login returns success for valid credentials.
+
+Protected Endpoints
+
+- GET /api/auth/me returns 401 Unauthorized without token.
+- GET /api/notes returns 401 Unauthorized without token.
+- POST /api/notes returns 401 Unauthorized without token.
 
 ## Testing Strategy
 

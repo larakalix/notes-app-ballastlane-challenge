@@ -20,7 +20,7 @@ The API uses PostgreSQL through Docker Compose.
 Database config:
 
 ```text
-database: notesDb
+database: notes_app
 user: postgres
 pwd: postgres
 port: 5432
@@ -30,7 +30,7 @@ In Docker Compose, the API connects to PostgreSQL using the services named `post
 with the following connection string:
 
 ```txt
-Host=postgres;Port=5432;Database=carDb;Username=postgres;Password=postgres
+Host=postgres;Port=5432;Database=notes_app;Username=postgres;Password=postgres
 ```
 
 ## Run the project
@@ -48,13 +48,12 @@ That runs the services and will allow you to access to the projects URLs
 http://localhost:3080
 ```
 
-### Backend 
+### Backend
 ```txt
 http://localhost:8080
 ```
 
-## Swagger
-Swagger should be available in:
+### OpenAPI (development)
 ```txt
-http://localhost:8080/swagger
+http://localhost:8080/openapi/v1.json
 ```

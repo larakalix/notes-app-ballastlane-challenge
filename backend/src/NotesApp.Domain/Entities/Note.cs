@@ -14,5 +14,9 @@ public class Note
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public DateTime? DueDate { get; set; }
+
+    public string Status { get; set; } = "active";
+
     public User? User { get; set; }
 }

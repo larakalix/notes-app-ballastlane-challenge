@@ -1,4 +1,5 @@
 using FluentValidation;
+using NotesApp.Application.Common.Exceptions;
 using NotesApp.Application.DTOs.Notes;
 using NotesApp.Application.Interfaces;
 using NotesApp.Domain.Entities;
@@ -30,6 +31,8 @@ public sealed class NoteService(
         {
             Title = request.Title.Trim(),
             Content = request.Content.Trim(),
+            Status = request.Status.Trim().ToLowerInvariant(),
+            DueDate = request.DueDate,
             UserId = userId,
             CreatedAt = now,
             UpdatedAt = now
@@ -65,6 +68,8 @@ public sealed class NoteService(
         var note = await GetOwnedNoteOrThrowAsync(userId, noteId, cancellationToken);
         note.Title = request.Title.Trim();
         note.Content = request.Content.Trim();
+        note.Status = request.Status.Trim().ToLowerInvariant();
+        note.DueDate = request.DueDate;
         note.UpdatedAt = DateTime.UtcNow;
 
         await _noteValidator.ValidateAndThrowAsync(note, cancellationToken);
@@ -96,12 +101,12 @@ public sealed class NoteService(
 
         if (note.UserId != userId)
         {
-            throw new UnauthorizedAccessException("You do not have access to this note.");
+            throw new ForbiddenAccessException("You do not have access to this note.");
         }
 
         return note;
     }
 
     private static NoteResponse ToResponse(Note note)
-        => new(note.Id, note.Title, note.Content, note.UserId, note.CreatedAt, note.UpdatedAt);
+        => new(note.Id, note.Title, note.Content, note.Status, note.DueDate, note.UserId, note.CreatedAt, note.UpdatedAt);
 }
