@@ -1,59 +1,125 @@
 # Notes App
 
-Full-stack app built in **Nuxt**, **.NET 10**, **PostgreSQL** and **Docker Compose**, in order to manage
-User auth and notes.
+Notes App is a full-stack demo project where users can register, log in, and manage their own notes.
+It includes authentication, protected API endpoints, and a frontend that consumes the backend API.
+
+## Project Purpose
+
+This project is meant as a practical Clean Architecture example with:
+
+- User authentication with JWT
+- Notes CRUD (create, read, update, delete)
+- Protected and public endpoints
+- Docker-based local development
+- Automated tests for application logic, repositories, and API endpoints
 
 ## Tech Stack
 
-- Nuxt (Vue)
-- TailwindCSS
+### Frontend
+
+- Nuxt 4 (Vue 3)
 - TypeScript
-- ASP.NET 10
+- Nuxt UI
+- Tailwind CSS
+- zod (form validation)
+
+### Backend
+
+- .NET 10 (ASP.NET Core Web API)
 - Entity Framework Core
 - PostgreSQL
-- Docker Compose
+- JWT authentication
 
-## Database
+### Tooling
 
-The API uses PostgreSQL through Docker Compose.
+- Docker + Docker Compose
+- xUnit + FluentAssertions + Moq
 
-Database config:
+## Running the Project
 
-```text
-database: notes_app
-user: postgres
-pwd: postgres
-port: 5432
-```
+Before running the project, make sure you have these tools installed:
 
-In Docker Compose, the API connects to PostgreSQL using the services named `postgres`,
-with the following connection string:
+- Docker Desktop (or Docker Engine + Docker Compose plugin)
+- Git
 
-```txt
-Host=postgres;Port=5432;Database=notes_app;Username=postgres;Password=postgres
-```
+Optional (only if you want to run backend tests locally outside Docker):
 
-## Run the project
+- .NET SDK 10
 
-You should be in route where the `docker-compose.yml` file is, then run the following command:
+Run everything with Docker Compose from the repository root:
 
 ```bash
 docker compose up --build
 ```
 
-That runs the services and will allow you to access to the projects URLs
+Services:
 
-### Frontend 
-```txt
-http://localhost:3080
+- Frontend: `http://localhost:3080`
+- Backend API: `http://localhost:8080`
+- OpenAPI JSON: `http://localhost:8080/openapi/v1.json`
+- PostgreSQL (host): `localhost:5433`
+
+## Demo Seed Data
+
+On first startup (empty DB), the backend seeds demo data:
+
+- 2 users
+- 3 notes per user
+- Password for all demo users: `demo00123`
+
+Demo users:
+
+- `demo1@notesapp.local`
+- `demo2@notesapp.local`
+
+If you need to reset and reseed:
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 
-### Backend
-```txt
-http://localhost:8080
+## Running Tests
+
+Run all backend tests:
+
+```bash
+cd backend
+dotnet test
 ```
 
-### OpenAPI (development)
-```txt
-http://localhost:8080/openapi/v1.json
+Or by layer:
+
+```bash
+dotnet test tests/NotesApp.Application.Tests/NotesApp.Application.Tests.csproj -v minimal
+dotnet test tests/NotesApp.Infrastructure.Tests/NotesApp.Infrastructure.Tests.csproj -v minimal
+dotnet test tests/NotesApp.Api.Tests/NotesApp.Api.Tests.csproj -v minimal
 ```
+
+## Repository Structure
+
+```txt
+backend/
+  src/
+    NotesApp.Domain/
+    NotesApp.Application/
+    NotesApp.Infrastructure/
+    NotesApp.Api/
+  tests/
+    NotesApp.Application.Tests/
+    NotesApp.Infrastructure.Tests/
+    NotesApp.Api.Tests/
+
+frontend/
+docs/
+docker-compose.yml
+```
+
+## Implementation Steps
+
+1. After understanding the main goal, I worked on the user story and acceptance criteria to clearly define the purpose of the task.
+2. I created dedicated markdown files for API and Frontend requirements to define goals, architecture, and detailed requirements for both projects.
+3. I connected everything step by step, implementing features incrementally and fixing issues/details as they appeared.
+4. After polishing errors and final details, I prepared complete documentation so the project is easy to run and test.
+
+All the documentation is in `docs/` folder.

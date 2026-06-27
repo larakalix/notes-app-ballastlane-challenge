@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NotesApp.Api.Middleware;
 using NotesApp.Application;
+using NotesApp.Application.Interfaces;
 using NotesApp.Infrastructure;
 using NotesApp.Infrastructure.Persistence;
 using NotesApp.Infrastructure.Security;
@@ -62,10 +63,17 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<NotesAppDbContext>();
     await dbContext.Database.EnsureCreatedAsync();
-    await dbContext.Database.ExecuteSqlRawAsync(
-        "ALTER TABLE IF EXISTS notes ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';");
-    await dbContext.Database.ExecuteSqlRawAsync(
-        "ALTER TABLE IF EXISTS notes ADD COLUMN IF NOT EXISTS due_date timestamp with time zone NULL;");
+
+    if (dbContext.Database.ProviderName?.Contains("Npgsql", StringComparison.OrdinalIgnoreCase) == true)
+    {
+        await dbContext.Database.ExecuteSqlRawAsync(
+            "ALTER TABLE IF EXISTS notes ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';");
+        await dbContext.Database.ExecuteSqlRawAsync(
+            "ALTER TABLE IF EXISTS notes ADD COLUMN IF NOT EXISTS due_date timestamp with time zone NULL;");
+    }
+
+    var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+    await DemoDataSeeder.SeedAsync(dbContext, passwordHasher);
 }
 
 // Configure the HTTP request pipeline.
@@ -84,3 +92,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program;
